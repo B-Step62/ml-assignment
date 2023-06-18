@@ -13,6 +13,9 @@ You should first fork this repository, and then send us the code or the url of y
 - **k8s/deployment.yaml**: To deploy image to Kubernetes
 - Other necessary code
 
+### [[Note from author]]
+As I have no personal kubernetes environment, I built my solution with docker-compose and translate it to kubernetes definition using [Kompose](https://kubernetes.io/docs/tasks/configure-pod-container/translate-compose-kubernetes/), but haven't verify it if really works or not on k8s. To reproduce original result with docker-compose, please run `docker compose up` on the top directory.
+
 ## Input/Output
 
 When you execute this command:

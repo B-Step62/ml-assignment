@@ -1,4 +1,4 @@
 fastapi==0.97.0
-transformers[torch]==4.21.0
-sentencepiece==0.1.97
+pika==1.3.2
+redis==4.5.5
 uvicorn==0.22.0

@@ -1,0 +1,42 @@
+version: '3'
+services:
+  redis:
+    image: "redis:alpine"
+    ports:
+      - 6379:6379
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: test
+      RABBITMQ_DEFAULT_PASS: test
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
+    volumes:
+      - ./worker:/worker
+      # volume for huggingface cache to avoid downloading model every time
+      - hf_cache:/root/.cache/huggingface/transformers
+    command: python main.py
+    depends_on:
+      - redis
+      - rabbitmq
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 9527 --reload
+    ports:
+      - 9527:9527
+    depends_on:
+      - redis
+      - rabbitmq
+      - worker
+
+volumes:
+  hf_cache:

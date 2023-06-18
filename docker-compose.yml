@@ -1,3 +1,4 @@
+# Dev use only
 version: '3'
 services:
   redis:
@@ -21,6 +22,8 @@ services:
       # volume for huggingface cache to avoid downloading model every time
       - hf_cache:/root/.cache/huggingface/transformers
     command: python main.py
+    env_file:
+      - .env
     depends_on:
       - redis
       - rabbitmq
@@ -31,6 +34,8 @@ services:
     volumes:
       - ./app:/app
     command: uvicorn main:app --host 0.0.0.0 --port 9527 --reload
+    env_file:
+      - .env
     ports:
       - 9527:9527
     depends_on:

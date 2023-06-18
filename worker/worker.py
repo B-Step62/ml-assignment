@@ -31,14 +31,22 @@ class TranslationWorker:
         src_lang = task["src_lang"]
         tgt_lang = task["tgt_lang"]
         
-        # TODO: Add error handling
-        translation = self._translator.translate(text, src_lang, tgt_lang)
-        logging.info(f"Translation task {task['id']} is completed")
+        try:
+            translation = self._translator.translate(text, src_lang, tgt_lang)
+            logging.info(f"Translation task {task['id']} is completed")
         
-        self._result_channel.publish(task["result_channel"], json.dumps({
-            "id": task["id"],
-            "text": text,
-            "translation": translation
-        }))
-        
-        self._task_queue.channel.basic_ack(delivery_tag=method.delivery_tag)
+            self._result_channel.publish(task["result_channel"], json.dumps({
+                "id": task["id"],
+                "status": "OK",
+                "text": text,
+                "translation": translation
+            }))
+        except Exception:
+            logging.error(f"Translation task {task['id']} is failed")
+            self._result_channel.publish(task["result_channel"], json.dumps({
+                "id": task["id"], "status": "Error",
+            }))
+
+        finally:
+            # Mark task as completed regardless of success or failure. Retry will be managed by the producer side.
+            self._task_queue.channel.basic_ack(delivery_tag=method.delivery_tag)

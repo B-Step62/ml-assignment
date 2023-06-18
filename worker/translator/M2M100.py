@@ -1,5 +1,4 @@
 from enum import Enum
-import threading
 from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer
 
 
